@@ -1,0 +1,79 @@
+{
+    "apiVersion": "apps/v1beta1",
+    "kind": "Deployment",
+    "metadata": {
+        "name": "azure-dl"
+    },
+    "spec": {
+        "replicas": 1,
+        "template": {
+            "metadata": {
+                "labels": {
+                    "app": "azure-dl"
+                }
+            },
+            "spec": {
+                "containers": [
+                    {
+                        "env": [
+                            {
+                                "name": "LD_LIBRARY_PATH",
+                                "value": "$LD_LIBRARY_PATH:/usr/local/nvidia/lib64:/opt/conda/envs/py3.5/lib"
+                            }
+                        ],
+                        "image": "fboylu/kerasres152-gpu",
+                        "name": "azure-dl",
+                        "ports": [
+                            {
+                                "containerPort": 80,
+                                "name": "model"
+                            }
+                        ],
+                        "resources": {
+                            "limits": {
+                                "alpha.kubernetes.io/nvidia-gpu": 1
+                            },
+                            "requests": {
+                                "alpha.kubernetes.io/nvidia-gpu": 1
+                            }
+                        },
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/usr/local/nvidia",
+                                "name": "nvidia"
+                            }
+                        ]
+                    }
+                ],
+                "volumes": [
+                    {
+                        "hostPath": {
+                            "path": "/usr/local/nvidia"
+                        },
+                        "name": "nvidia"
+                    }
+                ]
+            }
+        }
+    }
+}
+
+{
+    "apiVersion": "v1",
+    "kind": "Service",
+    "metadata": {
+        "name": "azure-dl"
+    },
+    "spec": {
+        "ports": [
+            {
+                "port": 80
+            }
+        ],
+        "selector": {
+            "app": "azure-dl"
+        },
+        "type": "LoadBalancer"
+    }
+}
+
