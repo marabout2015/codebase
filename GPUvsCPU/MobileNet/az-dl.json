@@ -5,7 +5,7 @@
         "name": "azure-dl"
     },
     "spec": {
-        "replicas": 1,
+        "replicas": 2,
         "template": {
             "metadata": {
                 "labels": {
@@ -15,13 +15,7 @@
             "spec": {
                 "containers": [
                     {
-                        "env": [
-                            {
-                                "name": "LD_LIBRARY_PATH",
-                                "value": "$LD_LIBRARY_PATH:/usr/local/nvidia/lib64:/opt/conda/envs/py3.5/lib"
-                            }
-                        ],
-                        "image": "fboylu/kerasmnet-gpu",
+                        "image": "fboylu/kerasmnet-cpu",
                         "name": "azure-dl",
                         "ports": [
                             {
@@ -31,26 +25,12 @@
                         ],
                         "resources": {
                             "limits": {
-                                "alpha.kubernetes.io/nvidia-gpu": 1
+                                "cpu": 1.25
                             },
                             "requests": {
-                                "alpha.kubernetes.io/nvidia-gpu": 1
+                                "cpu": 1
                             }
-                        },
-                        "volumeMounts": [
-                            {
-                                "mountPath": "/usr/local/nvidia",
-                                "name": "nvidia"
-                            }
-                        ]
-                    }
-                ],
-                "volumes": [
-                    {
-                        "hostPath": {
-                            "path": "/usr/local/nvidia"
-                        },
-                        "name": "nvidia"
+                        }
                     }
                 ]
             }
